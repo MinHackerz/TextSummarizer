@@ -27,4 +27,4 @@ def get_summary(text, num_sentences):
     return ' '.join(str(sentence) for sentence in summary)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
