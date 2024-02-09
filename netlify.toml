@@ -1,3 +1,12 @@
 [build]
-  command = "pip install -r requirements.txt && python app.py"
-  publish = "Templates"
+  command = "python functions/summarize.py"  # Path to the Python file containing your Flask app
+  functions = "functions"  # Directory where your serverless functions are located
+  publish = "templates"    # Directory to publish (your HTML templates)
+
+[dev]
+  command = "flask run --port $PORT"  # Command to run during development
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
