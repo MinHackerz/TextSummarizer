@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer</title>
+    <style>
+        /* CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        textarea, #fileInput, #outputContainer {
+            width: 90%;
+            margin: auto;
+            margin-bottom: 10px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 150px;
+        }
+        #fileInput {
+            display: block;
+            background-color: #f9f9f9;
+            font-size: 16px;
+        }
+        #summarizeBtn, #clearBtn {
+            padding: 10px 30px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-bottom: 10px; /* Add margin-bottom of 10px */
+        }
+        #summarizeBtn:hover, #clearBtn:hover {
+            background-color: #0056b3;
+        }
+        .actionButton {
+            display: none; /* Initially hide the buttons */
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .actionButton:hover {
+            background-color: #0056b3;
+        }
+        #clearBtn {
+            background-color: red;
+        }
+        #actionIcons {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text Summarizer</h1>
+        <p>Summarize long passages of text into shorter, concise versions, providing key points and main ideas.</p>
+        <form id="summarizeForm">
+            <textarea id="inputText" name="text" placeholder="Enter text..."></textarea>
+            <input type="file" id="fileInput" accept=".txt" title="Choose .txt file">
+            <br>
+            <button type="button" id="summarizeBtn">Summarize</button>
+            <button type="button" id="clearBtn">Clear</button>
+        </form>
+        <div id="outputContainer" readonly>
+            <!-- Output will be displayed here -->
+        </div>
+        <div id="actionIcons">
+            <button type="button" id="downloadBtn" class="actionButton">Download</button>
+            <button type="button" id="copyBtn" class="actionButton">Copy</button>
+        </div>
+    </div>
+    <script>
+        // JavaScript code
+        document.getElementById('summarizeBtn').addEventListener('click', function() {
+            var text = document.getElementById('inputText').value;
+            fetch('/summarize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: text })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the summarized text in the output container
+                document.getElementById('outputContainer').innerText = data.summary;
+                // Show the download and copy buttons
+                document.getElementById('downloadBtn').style.display = 'inline-block';
+                document.getElementById('copyBtn').style.display = 'inline-block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                document.getElementById('inputText').value = text;
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputContainer').innerText = '';
+            document.getElementById('fileInput').value = ''; // Clear uploaded file
+            // Hide the download and copy buttons
+            document.getElementById('downloadBtn').style.display = 'none';
+            document.getElementById('copyBtn').style.display = 'none';
+        });
+
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            var outputText = document.getElementById('outputContainer').innerText;
+            // Implement download functionality
+            // Create a blob with the output text
+            const blob = new Blob([outputText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            // Create a temporary anchor element
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'summary.txt';
+            // Programmatically click the anchor element to trigger download
+            a.click();
+            // Clean up resources
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            var outputText = document.getElementById('outputContainer').innerText;
+            // Copy the output text to clipboard
+            navigator.clipboard.writeText(outputText)
+                .then(() => {
+                    console.log('Text copied to clipboard');
+                    // Show confirmation message
+                    document.getElementById('copyBtn').innerText = 'Copied!';
+                    setTimeout(() => {
+                        document.getElementById('copyBtn').innerText = 'Copy';
+                    }, 1000); // Reset button text after 1 second
+                })
+                .catch(err => console.error('Could not copy text: ', err));
+        });
+    </script>
+</body>
+</html>
