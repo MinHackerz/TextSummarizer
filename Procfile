@@ -1,1 +1,1 @@
-web: gunicorn -b 0.0.0.0:5000 your_script_name:app
+web: gunicorn -b 0.0.0.0:$PORT your_script_name:app
