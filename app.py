@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
+from werkzeug.urls import quote
 import os
 
 app = Flask(__name__, static_folder='templates')
