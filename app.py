@@ -4,11 +4,16 @@ from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.lsa import LsaSummarizer
 from werkzeug.urls import quote
 import os
+import logging
 
 app = Flask(__name__, static_folder='templates')
 
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
+
 @app.route('/')
 def index():
+  logging.debug("Rendering index.html")
   return render_template('index.html')
 
 @app.route('/summarize', methods=['POST'])
