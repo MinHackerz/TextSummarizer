@@ -6,7 +6,7 @@ from werkzeug.urls import quote
 import os
 import logging
 
-app = Flask(__name__, static_folder='templates')
+app.static_folder = 'templates'
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
