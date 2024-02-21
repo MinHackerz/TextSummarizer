@@ -1,0 +1,6 @@
+[build]
+  command = "python -m pip install -r requirements.txt"
+  functions = "/summarize"  # Route for your endpoint
+
+[functions]
+  "/summarize" = "app:summarize"  # Map function to app.py function
